@@ -132,7 +132,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 	$pattern_ep_all = '/<span(.*?)id=\"curEps\"(.*?)data-num=\"(.*?)\"/i';
 	preg_match_all($pattern_ep_all, $res, $ep_all);
 
-	$db_connect->exec("INSERT INTO `mal_list` (`username`, `anime_id`, `ep`, `ep_all`) VALUES ('{$value_users["login"]}', '{$anime_id}', '{$ep_site[3][0]}', '{$ep_all[3][0]}') ON DUPLICATE KEY UPDATE ep=VALUES (ep), ep_all=VALUES (ep_all);");
+	$db_connect->exec("INSERT IGNORE INTO `mal_list` (`username`, `anime_id`, `ep`, `ep_all`) VALUES ('{$value_users["login"]}', '{$anime_id}', '{$ep_site[3][0]}', '{$ep_all[3][0]}') ON DUPLICATE KEY UPDATE ep=VALUES (ep), ep_all=VALUES (ep_all);");
 }
 
 echo "OK";
