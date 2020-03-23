@@ -146,37 +146,6 @@ if(isset($_GET["check_wlist"]) && !empty($_GET["check_wlist"])) {
 		}
 
 		$db_connect->exec("UPDATE `wak_list_anime` SET `mal_id`='{$anime_id}' WHERE `id_anime`='{$id_anime_wak}' AND `id_season`='{$id_season}';");
-
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_USERAGENT,$ua);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("Cookie: {$cookie_list}"));
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_COOKIEJAR, ROOT_DIR."/cookie/cookie_{$username}.txt");
-		curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		$res = curl_exec($ch);
-		curl_close($ch);
-
-		preg_match("/<meta name='csrf_token' content='([^']+)'>/", trim($res), $csrf_token);
-		$csrf_token = $csrf_token[1];
-
-		$ch = curl_init($add_anime);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_USERAGENT,$ua);
-		curl_setopt($ch, CURLOPT_REFERER, "https://myanimelist.net/anime/{$anime_id}/");
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("DNT: 1", "sec-fetch-dest: empty", "sec-fetch-mode: cors", "sec-fetch-site: same-origin", "content-type: application/x-www-form-urlencoded; charset=UTF-8"));
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($ch, CURLOPT_POST, true);
-		curl_setopt($ch, CURLOPT_POSTFIELDS,'{"anime_id":'.$anime_id.',"status":6,"score":0,"num_watched_episodes":0,"csrf_token":"'.$csrf_token.'"}');
-		curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
-		$info = curl_getinfo($ch);
-		$res = curl_exec($ch);
-		curl_close($ch);
-		print_r($res);
 	}
 	exit();
 }
@@ -204,10 +173,68 @@ if(isset($_GET["check_ep"]) && !empty($_GET["check_ep"])) {
 		$info = curl_getinfo($ch);
 		$res = curl_exec($ch);
 		curl_close($ch);
-		//print_r($res);
 
 		$pattern_ep_site = '/<input(.*?)id=\"myinfo_watchedeps\"(.*)value=\"(.*?)\"/i';
 		preg_match_all($pattern_ep_site, $res, $ep_site);
+
+		/*
+		if(isset($ep_site[3][0]) && empty($ep_site[3][0]) || !isset($ep_site[3][0]) && empty($ep_site[3][0])) {
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_USERAGENT,$ua);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array("Cookie: {$cookie_list}"));
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+			curl_setopt($ch, CURLOPT_COOKIEJAR, ROOT_DIR."/cookie/cookie_{$username}.txt");
+			curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			$res = curl_exec($ch);
+			curl_close($ch);
+
+			preg_match("/<meta name='csrf_token' content='([^']+)'>/", trim($res), $csrf_token);
+			$csrf_token = $csrf_token[1];
+
+			$ch = curl_init($add_anime);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_USERAGENT,$ua);
+			curl_setopt($ch, CURLOPT_REFERER, "https://myanimelist.net/anime/{$anime_id}/");
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array("DNT: 1", "sec-fetch-dest: empty", "sec-fetch-mode: cors", "sec-fetch-site: same-origin", "content-type: application/x-www-form-urlencoded; charset=UTF-8"));
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS,'{"anime_id":'.$anime_id.',"status":6,"score":0,"num_watched_episodes":0,"csrf_token":"'.$csrf_token.'"}');
+			curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
+			$info = curl_getinfo($ch);
+			$res = curl_exec($ch);
+			curl_close($ch);
+
+			// Получаем текущую серию
+			$ch = curl_init("https://myanimelist.net/anime/{$anime_id}/");
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_USERAGENT,$ua);
+			curl_setopt($ch, CURLOPT_REFERER, "https://myanimelist.net/");
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array("DNT: 1", "sec-fetch-dest: document", "sec-fetch-mode: navigate", "sec-fetch-site: cross-site", "sec-fetch-user: ?1", "upgrade-insecure-requests: 1"));
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
+			$info = curl_getinfo($ch);
+			$res = curl_exec($ch);
+			curl_close($ch);
+
+			$pattern_ep_site = '/<input(.*?)id=\"myinfo_watchedeps\"(.*)value=\"(.*?)\"/i';
+			preg_match_all($pattern_ep_site, $res, $ep_site);
+
+			echo $ep_site[3][0];
+			exit();
+		}
+		*/
+
+		if(isset($ep_site[3][0]) && empty($ep_site[3][0]) || !isset($ep_site[3][0]) && empty($ep_site[3][0])) {
+			echo 0;
+			exit();
+		}
 		
 		$db_connect->exec("INSERT INTO `mal_cron` (`username`, `anime_id`, `ep`, `status`, `datetime`) VALUES ('{$username}', '{$anime_id}', '{$ep_site[3][0]}', '1', '".time()."') ON DUPLICATE KEY UPDATE ep=VALUES (ep);");
 
