@@ -2,7 +2,7 @@
 
 Before using this plugin, please make a backup of the MyAnimeList
 
-# Wakanim plugin for Kodi
+# Wakanim plugin + MAL for Kodi
 
 Wakanim a KODI (XBMC) plugin for Wakanim.tv.
 
