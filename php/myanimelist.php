@@ -18,8 +18,14 @@ $ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ch
 
 $cookie_list = "";
 
+$db_connect = new MySQLiDB();
+$db = $db_connect->open();
+
 if(isset($_GET["auth"]) && !empty($_GET["auth"])) {
 	$password = $_GET["password"];
+	if(isset($password) && empty($password) || !isset($password) && empty($password)) return false;
+	if(isset($username) && empty($username) || !isset($username) && empty($username)) return false;
+	
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_USERAGENT,$ua);
@@ -76,14 +82,27 @@ if(isset($_GET["auth"]) && !empty($_GET["auth"])) {
 		echo "FAIL";
 		exit();
 	}
+
+	$run_query_users = $db_connect->query("SELECT `login`, `password` FROM `mal_users` WHERE `login`='{$username}';");
+	$result_query_users = $db_connect->fetch_array($run_query_users)[0];
+
+	if(isset($result_query_users["login"]) && empty($result_query_users["login"]) || !isset($result_query_users["login"]) && empty($result_query_users["login"])) {
+		$db_connect->exec("INSERT IGNORE INTO `mal_users` (`login`, `password`) VALUES ('{$username}', '{$password}');");
+	}
+	if(isset($result_query_users["login"]) && !empty($result_query_users["login"])) {
+		if(isset($result_query_users["password"]) && !empty($result_query_users["password"])) {
+			if($result_query_users["password"] != $password) {
+				$db_connect->exec("UPDATE `mal_users` SET `password`='{$password}' WHERE `login`='{$username}';");
+			}
+		}
+	}
+
 	echo "OK";
 	exit();
 }
 
 $id_season = $_GET["id_season"];
 if(isset($id_season) && empty($id_season) || !isset($id_season) && empty($id_season)) return false;
-$db_connect = new MySQLiDB();
-$db = $db_connect->open();
 
 $run_query_list_anime_id = $db_connect->query("SELECT `mal_id` FROM `wak_list_anime` WHERE `id_season`='{$id_season}';");
 $result_query_list_anime_id = $db_connect->fetch_array($run_query_list_anime_id);
