@@ -31,6 +31,7 @@ What this plugin currently can do:
 - [x] Watch videos with premium subscription
 - [x] Watch anime trailer (requires YouTube plugin)
 - [x] Synchronizes playback stats with Wakanim
+- [x] MAL (MyAnimeList)
 ***
 
 _This website and addon is not affiliated with Wakanim._
