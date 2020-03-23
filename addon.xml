@@ -23,7 +23,7 @@
         <disclaimer lang="de_DE">HINWEIS: Du MUSST PREMIUM Mitglied sein oder Videos KAUFEN um dieses Plugin zu benutzen</disclaimer>
         <disclaimer lang="fr_FR">AVERTISSEMENT: VOUS DEVEZ être un membre PREMIUM ou ACHETER des vidéos pour utiliser ce plugin</disclaimer>
         <disclaimer lang="ru_RU">ВНИМАНИЕ: Для использования этого плагина Вы должны оформить подписку или купить аниме</disclaimer>
-        <news>v0.8.1 (2020.03.23)[CR]- Исправление ошибки при открытии каталога[CR]- Добавлена функция по редаткированию просмотренных серий в сервисе MAL (MyAnimeList)</news>
+        <news>v0.8.1 (2020.03.23)[CR]- Исправление ошибки при открытии каталога[CR]- Добавлена функция по редактированию просмотренных серий в сервисе MAL (MyAnimeList)</news>
         <license>AGPL-3.0-only</license>
         <forum>https://forum.kodi.tv/showthread.php?tid=322763</forum>
         <website>https://www.wakanim.tv/</website>
