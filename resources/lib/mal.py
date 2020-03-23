@@ -43,7 +43,7 @@ def getTPath(args):
     else:
         return os.path.join(profile_path, "title_anime.txt")
 
-def check_wlist(title, id_anime, id_season):
+def auth(args):
     opener = build_opener()
     opener.addheaders = [("User-Agent",      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36"),
                          ("Accept-Encoding", "identity"),
@@ -51,12 +51,13 @@ def check_wlist(title, id_anime, id_season):
                          ("DNT",             "1")]
     install_opener(opener)
 
-    anime = u"%s" % (quote_plus(title.encode("utf-8")).encode("utf-8"))
-    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?check_wlist=true&title=%s&id_anime=%s&id_season=%s" % (anime, id_anime, id_season))
+    login = u"%s" % (quote_plus(args._addon.getSetting("mal_username").encode("utf-8")).encode("utf-8"))
+    password = u"%s" % (quote_plus(args._addon.getSetting("mal_password").encode("utf-8")).encode("utf-8"))
+    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?auth=true&login=%s&password=%s" % (login, password))
     result = response.read().decode(getCharset(response))
     return result
 
-def check_ep(id_anime, id_season):
+def check_wlist(args, title, id_anime, id_season):
     opener = build_opener()
     opener.addheaders = [("User-Agent",      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36"),
                          ("Accept-Encoding", "identity"),
@@ -64,14 +65,29 @@ def check_ep(id_anime, id_season):
                          ("DNT",             "1")]
     install_opener(opener)
 
-    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?check_ep=true&id_anime=%s&id_season=%s" % (id_anime, id_season))
+    login = u"%s" % (quote_plus(args._addon.getSetting("mal_username").encode("utf-8")).encode("utf-8"))
+    anime = u"%s" % (quote_plus(title.encode("utf-8")).encode("utf-8"))
+    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?check_wlist=true&login=%s&title=%s&id_anime=%s&id_season=%s" % (login, anime, id_anime, id_season))
+    result = response.read().decode(getCharset(response))
+    return result
+
+def check_ep(args, id_anime, id_season):
+    opener = build_opener()
+    opener.addheaders = [("User-Agent",      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36"),
+                         ("Accept-Encoding", "identity"),
+                         ("Accept-Charset",  "utf-8"),
+                         ("DNT",             "1")]
+    install_opener(opener)
+
+    login = u"%s" % (quote_plus(args._addon.getSetting("mal_username").encode("utf-8")).encode("utf-8"))
+    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?check_ep=true&login=%s&id_anime=%s&id_season=%s" % (login, id_anime, id_season))
     result = response.read().decode(getCharset(response))
 
     dialog = xbmcgui.Dialog()
     dialog.notification(u'MAL', u"Episode %s" % (result), xbmcgui.NOTIFICATION_INFO, 5000)
     return result
 
-def update(id_season, ep):
+def update(args, id_season, ep):
     dialog = xbmcgui.Dialog()
     dialog.notification(u'MAL', u"Anime Update Episode Start", xbmcgui.NOTIFICATION_INFO, 5000)
     
@@ -82,7 +98,8 @@ def update(id_season, ep):
                          ("DNT",             "1")]
     install_opener(opener)
 
-    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?update=true&status=1&id_season=%s&ep=%s" % (id_season, ep))
+    login = u"%s" % (quote_plus(args._addon.getSetting("mal_username").encode("utf-8")).encode("utf-8"))
+    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?update=true&status=1&login=%s&id_season=%s&ep=%s" % (login, id_season, ep))
     result = response.read().decode(getCharset(response))
 
     dialog = xbmcgui.Dialog()

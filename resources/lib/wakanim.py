@@ -23,10 +23,10 @@ import xbmcaddon
 import xbmcplugin
 
 from . import api
+from . import mal
 from . import view
 from . import model
 from . import controller
-
 
 def main(argv):
     """Main function for the addon
@@ -64,12 +64,12 @@ def main(argv):
         args._addon.openSettings()
         return False
     else:
-        # list menue
+        # list menue       
         api.start(args)
         xbmcplugin.setContent(int(args._argv[1]), "tvshows")
         check_mode(args)
         api.close(args)
-
+        mal.auth(args)
 
 def check_mode(args):
     """Run mode-specific functions
