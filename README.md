@@ -1,6 +1,6 @@
 Прежде чем использовать данный плагин, прошу сделать бэкап списка MyAnimeList
 
-Before using this plugin, please make a backup of the MyAnimeList list
+Before using this plugin, please make a backup of the MyAnimeList
 
 # Wakanim plugin for Kodi
 
