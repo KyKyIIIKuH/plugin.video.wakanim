@@ -36,9 +36,12 @@ import xbmcgui
 import xbmcplugin
 
 from . import api
+from . import mal
 from . import view
 from .streamparams import getStreamParams
 
+episode_site = 0
+mal_url = None
 
 def showCatalog(args):
     """Show all animes
@@ -58,6 +61,16 @@ def showCatalog(args):
     for li in ul.find_all("li"):
         # get values
         plot  = li.find("p", {"class": "tooltip_text"})
+        i_sel = 3
+        try:
+          plot.contents[3].string.strip()
+          i_sel  = 3
+        except IndexError:
+          if(int(len(plot)) == 1):
+            i_sel = 0
+          elif(int(len(plot)) > 1):
+            i_sel = int(len(plot) -1 )
+
         stars = li.find("div", {"class": "stars"})
         star  = stars.find_all("span", {"class": "-no"})
         thumb = li.img["src"].replace(" ", "%20")
@@ -73,7 +86,7 @@ def showCatalog(args):
                        "thumb":       thumb,
                        "fanart":      thumb,
                        "rating":      str(10 - len(star) * 2),
-                       "plot":        plot.contents[3].string.strip(),
+                       "plot":        plot.contents[i_sel].string.strip(),
                        "year":        li.time.string.strip()},
                       isFolder=True, mediatype="video")
 
@@ -105,6 +118,20 @@ def listLastEpisodes(args):
         thumb = li.img["src"].replace(" ", "%20")
         if thumb[:4] != "http":
             thumb = "https:" + thumb
+
+        status = "1" if progress > 90 else "0"
+
+        if(int(status) == 1):
+          ids = li.find("a", {"class": "slider_item_season"})['href'].split('/')
+          episode_site = mal.check_ep(ids[5], ids[8])
+          ep = li.img["alt"].strip().split('Серия ')[1].strip()
+          if(("дубляж" in li.img["alt"].strip()) == True):
+            ep = ep.split(" дубляж")[0]
+          if(("субтитры" in li.img["alt"].strip()) == True):
+            ep = ep.split(" субтитры")[0]
+
+          if(int(ep) > int(episode_site)):
+            mal.update(ids[8], ep)
 
         # add to view
         view.add_item(args,
@@ -279,6 +306,9 @@ def listSeason(args):
     year = date[2].string.strip()
     date = year + "-" + date[1].string.strip() + "-" + date[0].string.strip()
     originaltitle = soup.find_all("span", {"class": "border-list_text"})[2].string.strip()
+
+    open(mal.getTPath(args), 'w').write(originaltitle)
+
     try:
         plot = soup.find_all("span", {"class": "border-list_text"})[0].string.strip()
     except AttributeError:
@@ -341,6 +371,9 @@ def listSeason(args):
 def listEpisodes(args):
     """Show all episodes of an season/arc
     """
+    global episode_site
+    global mal_url
+
     # get website
     html = api.getPage(args, "https://www.wakanim.tv" + args.url)
     if not html:
@@ -352,11 +385,30 @@ def listEpisodes(args):
     soup = BeautifulSoup(html, "html.parser")
 
     # for every episode
+    i_num = 0
+
+    if(mal_url == None or str(mal_url) != str(args.url)):
+      for li in soup.find_all("div", {"class": "slider_item_inner"}):
+        ep = args.url.split('/')
+        mal.check_wlist(open(mal.getTPath(args), 'r').read(), ep[5], ep[8])
+        episode_site = mal.check_ep(ep[5], ep[8])
+        break
+
     for li in soup.find_all("div", {"class": "slider_item_inner"}):
-        progress = int(li.find("div", {"class": "ProgressBar"}).get("data-progress"))
+        try:
+          progress = int(li.find("div", {"class": "ProgressBar"}).get("data-progress"))
+        except AttributeError:
+          continue
         thumb = li.img["src"].replace(" ", "%20")
         if thumb[:4] != "http":
             thumb = "https:" + thumb
+
+        status = "1" if progress > 90 else "0"
+        i_num = i_num + 1
+        
+        if(int(status) == 1 and int(i_num) > int(episode_site)):
+          mal.update(args.url.split('/')[8], i_num)
+          episode_site = i_num
 
         # add to view
         view.add_item(args,
@@ -370,7 +422,6 @@ def listEpisodes(args):
                       isFolder=False, mediatype="video")
 
     view.endofdirectory(args)
-
 
 def startplayback(args):
     """Plays a video
@@ -429,7 +480,10 @@ def startplayback(args):
 
         # play stream
         url = params["url"]
-        item = xbmcgui.ListItem(getattr(args, "title", "Title not provided"), path=url)
+        try:
+          item = xbmcgui.ListItem(getattr(args, "title", "Title not provided"), path=url)
+        except:
+          return
         if params["content-type"]:
             item.setMimeType(params["content-type"])
         for k,v in list(params["properties"].items()):
