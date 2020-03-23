@@ -123,15 +123,12 @@ def listLastEpisodes(args):
 
         if(int(status) == 1):
           ids = li.find("a", {"class": "slider_item_season"})['href'].split('/')
-          episode_site = mal.check_ep(ids[5], ids[8])
-          ep = li.img["alt"].strip().split('Серия ')[1].strip()
-          if(("дубляж" in li.img["alt"].strip()) == True):
-            ep = ep.split(" дубляж")[0]
-          if(("субтитры" in li.img["alt"].strip()) == True):
-            ep = ep.split(" субтитры")[0]
+          episode_site = mal.check_ep(args, ids[5], ids[8])
+
+          ep = check_last_ep(li.img["alt"].strip(), args._country)
 
           if(int(ep) > int(episode_site)):
-            mal.update(ids[8], ep)
+            mal.update(args, ids[8], ep)
 
         # add to view
         view.add_item(args,
@@ -147,6 +144,20 @@ def listLastEpisodes(args):
 
     view.endofdirectory(args)
 
+def check_last_ep(html, _country):
+  ep = False
+  if(str(_country) == "ru"):
+    if(("Серия" in html) == True):
+      ep = html.split('Серия ')[1].strip()
+
+  if(str(_country) == "de"):
+    if(("Folge" in html) == True):
+      ep = html.split('Folge ')[1].strip()
+
+  if(str(_country) == "fr" or str(_country) == "sc"):
+    if(("Episode" in html) == True):
+      ep = html.split('Episode ')[1].strip()
+  return ep
 
 def listLastSimulcasts(args):
     """Show last simulcasts
@@ -390,8 +401,8 @@ def listEpisodes(args):
     if(mal_url == None or str(mal_url) != str(args.url)):
       for li in soup.find_all("div", {"class": "slider_item_inner"}):
         ep = args.url.split('/')
-        mal.check_wlist(open(mal.getTPath(args), 'r').read(), ep[5], ep[8])
-        episode_site = mal.check_ep(ep[5], ep[8])
+        mal.check_wlist(args, open(mal.getTPath(args), 'r').read(), ep[5], ep[8])
+        episode_site = mal.check_ep(args, ep[5], ep[8])
         break
 
     for li in soup.find_all("div", {"class": "slider_item_inner"}):
@@ -407,7 +418,7 @@ def listEpisodes(args):
         i_num = i_num + 1
         
         if(int(status) == 1 and int(i_num) > int(episode_site)):
-          mal.update(args.url.split('/')[8], i_num)
+          mal.update(args, args.url.split('/')[8], i_num)
           episode_site = i_num
 
         # add to view
