@@ -1,3 +1,7 @@
+Прежде чем использовать данный плагин, прошу сделать бэкап списка MyAnimeList
+
+Before using this plugin, please make a backup of the MyAnimeList list
+
 # Wakanim plugin for Kodi
 
 Wakanim a KODI (XBMC) plugin for Wakanim.tv.
