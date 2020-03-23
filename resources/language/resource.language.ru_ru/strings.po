@@ -111,3 +111,11 @@ msgstr "Не удалось воспроизвести видео"
 msgctxt "#30045"
 msgid "Do you want to continue watching at %s%%?"
 msgstr "Вы хотите продолжить просмотр на %s%%?"
+
+msgctxt "#30050"
+msgid "MAL Username"
+msgstr "MAL имя пользователя"
+
+msgctxt "#30051"
+msgid "MAL Password"
+msgstr "MAL пароль"
