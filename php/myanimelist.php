@@ -83,19 +83,7 @@ if(isset($_GET["auth"]) && !empty($_GET["auth"])) {
 		exit();
 	}
 
-	$run_query_users = $db_connect->query("SELECT `login`, `password` FROM `mal_users` WHERE `login`='{$username}';");
-	$result_query_users = $db_connect->fetch_array($run_query_users)[0];
-
-	if(isset($result_query_users["login"]) && empty($result_query_users["login"]) || !isset($result_query_users["login"]) && empty($result_query_users["login"])) {
-		$db_connect->exec("INSERT IGNORE INTO `mal_users` (`login`, `password`) VALUES ('{$username}', '{$password}');");
-	}
-	if(isset($result_query_users["login"]) && !empty($result_query_users["login"])) {
-		if(isset($result_query_users["password"]) && !empty($result_query_users["password"])) {
-			if($result_query_users["password"] != $password) {
-				$db_connect->exec("UPDATE `mal_users` SET `password`='{$password}' WHERE `login`='{$username}';");
-			}
-		}
-	}
+	$db_connect->exec("INSERT INTO `mal_users` (`login`, `password`) VALUES ('{$username}', '{$password}') ON DUPLICATE KEY UPDATE password=VALUES (password);");
 
 	echo "OK";
 	exit();
@@ -180,7 +168,7 @@ if(isset($_GET["check_ep"]) && !empty($_GET["check_ep"])) {
 		/*
 		if(isset($ep_site[3][0]) && empty($ep_site[3][0]) || !isset($ep_site[3][0]) && empty($ep_site[3][0])) {
 			$ch = curl_init($url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);/home/kykyiiikuh/Документы/Сайты/[/
 			curl_setopt($ch, CURLOPT_USERAGENT,$ua);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array("Cookie: {$cookie_list}"));
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
