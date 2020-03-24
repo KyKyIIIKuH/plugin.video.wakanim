@@ -168,7 +168,7 @@ if(isset($_GET["check_ep"]) && !empty($_GET["check_ep"])) {
 		/*
 		if(isset($ep_site[3][0]) && empty($ep_site[3][0]) || !isset($ep_site[3][0]) && empty($ep_site[3][0])) {
 			$ch = curl_init($url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);/home/kykyiiikuh/Документы/Сайты/[/
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_USERAGENT,$ua);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array("Cookie: {$cookie_list}"));
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
