@@ -95,7 +95,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 		if(isset($status) && empty($status) || !isset($status) && empty($status)) return false;
 
 		// проверяем добавлено ли аниме в список просмотра
-		$run_query_mal = $db_connect->query("SELECT `ep`, `ep_all` FROM `mal_list` WHERE `anime_id`='{$anime_id}';");
+		$run_query_mal = $db_connect->query("SELECT `ep` FROM `mal_list` WHERE `anime_id`='{$anime_id}';");
 		$result_query_mal = $db_connect->fetch_array($run_query_mal);
 
 		if(isset($result_query_mal) && empty($result_query_mal) || isset($result_query_mal) && !empty($result_query_mal) || !isset($result_query_mal) && empty($result_query_mal)) {
@@ -117,10 +117,6 @@ foreach ($result_query_users as $keys_users => $value_users) {
 			$info = curl_getinfo($ch);
 			$res = curl_exec($ch);
 			curl_close($ch);
-		}
-
-		if(isset($result_query_mal["ep_all"]) && !empty($result_query_mal["ep_all"]) && $result_query_mal["ep_all"] == $episodes) {
-			$status = 2;
 		}
 
 		$ch = curl_init($edit_anime);
@@ -161,6 +157,28 @@ foreach ($result_query_users as $keys_users => $value_users) {
 		if(isset($ep_site[3][0]) && !empty($ep_site[3][0])) {
 			$db_connect->exec("INSERT IGNORE INTO `mal_list` (`username`, `anime_id`, `ep`, `ep_all`) VALUES ('{$username}', '{$anime_id}', '{$ep_site[3][0]}', '{$ep_all[3][0]}') ON DUPLICATE KEY UPDATE ep=VALUES (ep), ep_all=VALUES (ep_all);");
 			$db_connect->exec("DELETE FROM `mal_cron` WHERE `username`='{$username}' AND `anime_id`='{$anime_id}';");
+
+			$run_query_mal = $db_connect->query("SELECT `ep_all` FROM `mal_list` WHERE `username`='{$username}' AND `anime_id`='{$anime_id}';");
+			$result_query_mal = $db_connect->fetch_array($run_query_mal)[0];
+
+			if(isset($result_query_mal["ep_all"]) && !empty($result_query_mal["ep_all"]) && $result_query_mal["ep_all"] == $episodes) {
+				$status = 2;
+			}
+
+			$ch = curl_init($edit_anime);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_USERAGENT,$ua);
+			curl_setopt($ch, CURLOPT_REFERER, "https://myanimelist.net/anime/{$anime_id}/");
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array("DNT: 1", "sec-fetch-dest: empty", "sec-fetch-mode: cors", "sec-fetch-site: same-origin", "content-type: application/x-www-form-urlencoded; charset=UTF-8"));
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS,'{"anime_id":'.$anime_id.',"status":'.$status.',"score":0,"num_watched_episodes":'.$episodes.',"csrf_token":"'.$csrf_token.'"}');
+			curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
+			$info = curl_getinfo($ch);
+			$res = curl_exec($ch);
+			curl_close($ch);
 		}
 	}
 }
