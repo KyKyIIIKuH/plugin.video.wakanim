@@ -40,9 +40,6 @@ from . import mal
 from . import view
 from .streamparams import getStreamParams
 
-episode_site = 0
-mal_url = None
-
 def showCatalog(args):
     """Show all animes
     """
@@ -123,12 +120,13 @@ def listLastEpisodes(args):
 
         if(int(status) == 1):
           ids = li.find("a", {"class": "slider_item_season"})['href'].split('/')
-          episode_site = mal.check_ep(args, ids[5], ids[8])
+          id_episode = li.find("a", {"class": "slider_item_link"})['href'].split('/')[5]
+          episode_site = mal.check_ep(args, ids[5], ids[8], id_episode)
 
           ep = check_last_ep(li.img["alt"].strip(), args._country)
 
           if(int(ep) > int(episode_site)):
-            mal.update(args, ids[8], ep)
+            mal.update(args, ids[8], ep, id_episode)
 
         # add to view
         view.add_item(args,
@@ -149,14 +147,23 @@ def check_last_ep(html, _country):
   if(str(_country) == "ru"):
     if(("Серия" in html) == True):
       ep = html.split('Серия ')[1].strip()
+    else:
+      if(("OVA" in html) == True):
+        ep = 1
 
   if(str(_country) == "de"):
     if(("Folge" in html) == True):
       ep = html.split('Folge ')[1].strip()
+    else:
+      if(("OVA" in html) == True):
+        ep = 1
 
   if(str(_country) == "fr" or str(_country) == "sc"):
     if(("Episode" in html) == True):
       ep = html.split('Episode ')[1].strip()
+    else:
+      if(("OVA" in html) == True):
+        ep = 1
   return ep
 
 def listLastSimulcasts(args):
@@ -382,8 +389,6 @@ def listSeason(args):
 def listEpisodes(args):
     """Show all episodes of an season/arc
     """
-    global episode_site
-    global mal_url
 
     # get website
     html = api.getPage(args, "https://www.wakanim.tv" + args.url)
@@ -394,17 +399,8 @@ def listEpisodes(args):
 
     # parse html
     soup = BeautifulSoup(html, "html.parser")
-
+    
     # for every episode
-    i_num = 0
-
-    if(mal_url == None or str(mal_url) != str(args.url)):
-      for li in soup.find_all("div", {"class": "slider_item_inner"}):
-        ep = args.url.split('/')
-        mal.check_wlist(args, open(mal.getTPath(args), 'r').read(), ep[5], ep[8])
-        episode_site = mal.check_ep(args, ep[5], ep[8])
-        break
-
     for li in soup.find_all("div", {"class": "slider_item_inner"}):
         try:
           progress = int(li.find("div", {"class": "ProgressBar"}).get("data-progress"))
@@ -415,11 +411,22 @@ def listEpisodes(args):
             thumb = "https:" + thumb
 
         status = "1" if progress > 90 else "0"
-        i_num = i_num + 1
+        #i_num = i_num + 1
+
+        i_num = check_last_ep(li.img["alt"].strip(), args._country)
+
+        id_episode = li.find("a", {"class": "slider_item_link"})['href'].split('/')[5]
+        ep = args.url.split('/')
+        episode_site = mal.check_ep(args, ep[5], ep[8], id_episode, 0)
+
+        #dialog = xbmcgui.Dialog()
+        #dialog.notification(u'MAL', u"%s | %s | %s" % (status, i_num, episode_site), xbmcgui.NOTIFICATION_INFO, 5000)
         
         if(int(status) == 1 and int(i_num) > int(episode_site)):
-          mal.update(args, args.url.split('/')[8], i_num)
+          episode_site = mal.check_ep(args, ep[5], ep[8], id_episode, 0)
+          mal.update(args, args.url.split('/')[8], i_num, id_episode)
           episode_site = i_num
+          id_episode_new = li.find("a", {"class": "slider_item_link"})['href'].split('/')[5]
 
         # add to view
         view.add_item(args,
