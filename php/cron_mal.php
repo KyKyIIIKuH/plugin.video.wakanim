@@ -80,7 +80,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 	}
 
 	// Список задач
-	$run_query_cron = $db_connect->query("SELECT `anime_id`, `ep`, `status`, (SELECT `ep_all` FROM `mal_list` WHERE anime_id=mal_cron.anime_id) as ep_all FROM `mal_cron` WHERE `username`='{$username}';");
+	$run_query_cron = $db_connect->query("SELECT `anime_id`, `ep`, `status` FROM `mal_cron` WHERE `username`='{$username}';");
 	$result_query_cron = $db_connect->fetch_array($run_query_cron);
 
 	$anime_id = 0;
@@ -95,7 +95,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 		if(isset($status) && empty($status) || !isset($status) && empty($status)) return false;
 
 		// проверяем добавлено ли аниме в список просмотра
-		$run_query_mal = $db_connect->query("SELECT `ep` FROM `mal_list` WHERE `anime_id`='{$anime_id}';");
+		$run_query_mal = $db_connect->query("SELECT `ep`, `ep_all` FROM `mal_list` WHERE `anime_id`='{$anime_id}';");
 		$result_query_mal = $db_connect->fetch_array($run_query_mal);
 
 		if(isset($result_query_mal) && empty($result_query_mal) || isset($result_query_mal) && !empty($result_query_mal) || !isset($result_query_mal) && empty($result_query_mal)) {
@@ -119,7 +119,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 			curl_close($ch);
 		}
 
-		if(isset($value_cron["ep_all"]) && !empty($value_cron["ep_all"]) && $value_cron["ep_all"] == $episodes) {
+		if(isset($result_query_mal["ep_all"]) && !empty($result_query_mal["ep_all"]) && $result_query_mal["ep_all"] == $episodes) {
 			$status = 2;
 		}
 
