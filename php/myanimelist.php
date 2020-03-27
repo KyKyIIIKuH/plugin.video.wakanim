@@ -92,51 +92,15 @@ if(isset($_GET["auth"]) && !empty($_GET["auth"])) {
 $id_season = $_GET["id_season"];
 if(isset($id_season) && empty($id_season) || !isset($id_season) && empty($id_season)) return false;
 
-$run_query_list_anime_id = $db_connect->query("SELECT `mal_id` FROM `wak_list_anime` WHERE `id_season`='{$id_season}';");
+$id_episode = $_GET["id_episode"];
+if(isset($id_episode) && empty($id_episode) || !isset($id_episode) && empty($id_episode)) return false;
+
+//print_r("SELECT `mal_id` FROM `wak_list_episodes` WHERE `id_episode`='{$id_episode}';");
+
+$run_query_list_anime_id = $db_connect->query("SELECT `mal_id` FROM `wak_list_episodes` WHERE `id_episode`='{$id_episode}';");
 $result_query_list_anime_id = $db_connect->fetch_array($run_query_list_anime_id);
+if(isset($result_query_list_anime_id[0]["mal_id"]) && empty($result_query_list_anime_id[0]["mal_id"]) || !isset($result_query_list_anime_id[0]["mal_id"]) && empty($result_query_list_anime_id[0]["mal_id"])) exit();
 $anime_id = $result_query_list_anime_id[0]["mal_id"];
-
-if(isset($result_query_list_anime_id[0]["mal_id"]) && empty($result_query_list_anime_id[0]["mal_id"]) || !isset($result_query_list_anime_id[0]["mal_id"]) && empty($result_query_list_anime_id[0]["mal_id"])) {
-	$id_anime_wak = $_GET["id_anime"];
-
-	$db_connect->exec("INSERT IGNORE INTO `wak_list_anime` (`id_anime`, `id_season`) VALUES ('{$id_anime_wak}', '{$id_season}');");
-}
-
-if(isset($_GET["check_wlist"]) && !empty($_GET["check_wlist"])) {
-	$run_query_list_anime_id = $db_connect->query("SELECT `mal_id` FROM `wak_list_anime` WHERE `id_season`='{$id_season}';");
-	$result_query_list_anime_id = $db_connect->fetch_array($run_query_list_anime_id);
-	$anime_id = $result_query_list_anime_id[0]["mal_id"];
-
-	if(isset($result_query_list_anime_id[0]["mal_id"]) && empty($result_query_list_anime_id[0]["mal_id"]) || !isset($result_query_list_anime_id[0]["mal_id"]) && empty($result_query_list_anime_id[0]["mal_id"])) {
-		$id_anime_wak = $_GET["id_anime"];
-		$title_wak = $_GET["title"];
-
-		if(isset($id_anime_wak) && empty($id_anime_wak) || !isset($id_anime_wak) && empty($id_anime_wak)) return false;
-		if(isset($title_wak) && empty($title_wak) || !isset($title_wak) && empty($title_wak)) return false;
-
-		$title_anime = urlencode($title_wak);
-
-		$anime_id = file_get_contents("https://ploader.ru/scripts/php/url_js.php?method=GET&url=myanimelist.net/search/prefix.json?type=all&keyword={$title_anime}&v=1");
-		$anime_id = (array) json_decode($anime_id, true);
-
-		foreach ($anime_id as $key => $value) {
-			$value = (array) json_decode($value, true);
-			foreach ($value as $key2 => $value2) {
-				foreach ($value2 as $key3 => $value3) {
-					if($value3["type"] == "anime") {
-						foreach ($value3["items"] as $key4 => $value4) {
-							$anime_id = $value4["id"];
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		$db_connect->exec("UPDATE `wak_list_anime` SET `mal_id`='{$anime_id}' WHERE `id_anime`='{$id_anime_wak}' AND `id_season`='{$id_season}';");
-	}
-	exit();
-}
 
 if(isset($_GET["check_ep"]) && !empty($_GET["check_ep"])) {
 	$run_query_list = $db_connect->query("SELECT `ep` FROM `mal_list` WHERE `username`='{$username}' AND `anime_id`='{$anime_id}';");
@@ -164,60 +128,6 @@ if(isset($_GET["check_ep"]) && !empty($_GET["check_ep"])) {
 
 		$pattern_ep_site = '/<input(.*?)id=\"myinfo_watchedeps\"(.*)value=\"(.*?)\"/i';
 		preg_match_all($pattern_ep_site, $res, $ep_site);
-
-		/*
-		if(isset($ep_site[3][0]) && empty($ep_site[3][0]) || !isset($ep_site[3][0]) && empty($ep_site[3][0])) {
-			$ch = curl_init($url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_USERAGENT,$ua);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array("Cookie: {$cookie_list}"));
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-			curl_setopt($ch, CURLOPT_COOKIEJAR, ROOT_DIR."/cookie/cookie_{$username}.txt");
-			curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			$res = curl_exec($ch);
-			curl_close($ch);
-
-			preg_match("/<meta name='csrf_token' content='([^']+)'>/", trim($res), $csrf_token);
-			$csrf_token = $csrf_token[1];
-
-			$ch = curl_init($add_anime);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_USERAGENT,$ua);
-			curl_setopt($ch, CURLOPT_REFERER, "https://myanimelist.net/anime/{$anime_id}/");
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array("DNT: 1", "sec-fetch-dest: empty", "sec-fetch-mode: cors", "sec-fetch-site: same-origin", "content-type: application/x-www-form-urlencoded; charset=UTF-8"));
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			curl_setopt($ch, CURLOPT_POST, true);
-			curl_setopt($ch, CURLOPT_POSTFIELDS,'{"anime_id":'.$anime_id.',"status":6,"score":0,"num_watched_episodes":0,"csrf_token":"'.$csrf_token.'"}');
-			curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
-			$info = curl_getinfo($ch);
-			$res = curl_exec($ch);
-			curl_close($ch);
-
-			// Получаем текущую серию
-			$ch = curl_init("https://myanimelist.net/anime/{$anime_id}/");
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_USERAGENT,$ua);
-			curl_setopt($ch, CURLOPT_REFERER, "https://myanimelist.net/");
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array("DNT: 1", "sec-fetch-dest: document", "sec-fetch-mode: navigate", "sec-fetch-site: cross-site", "sec-fetch-user: ?1", "upgrade-insecure-requests: 1"));
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-			curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
-			$info = curl_getinfo($ch);
-			$res = curl_exec($ch);
-			curl_close($ch);
-
-			$pattern_ep_site = '/<input(.*?)id=\"myinfo_watchedeps\"(.*)value=\"(.*?)\"/i';
-			preg_match_all($pattern_ep_site, $res, $ep_site);
-
-			echo $ep_site[3][0];
-			exit();
-		}
-		*/
 
 		if(isset($ep_site[3][0]) && empty($ep_site[3][0]) || !isset($ep_site[3][0]) && empty($ep_site[3][0])) {
 			echo 0;
