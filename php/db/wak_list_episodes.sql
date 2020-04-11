@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Апр 11 2020 г., 14:00
+-- Время создания: Апр 11 2020 г., 22:28
 -- Версия сервера: 5.7.29
 -- Версия PHP: 5.6.40
 
@@ -9738,7 +9738,23 @@ INSERT INTO `wak_list_episodes` (`id`, `mal_id`, `id_anime`, `id_season`, `id_ep
 (10381, 39597, 534, 975, 10211, 'subtitles'),
 (10382, 39597, 534, 975, 10212, 'subtitles'),
 (10383, 39597, 534, 975, 10213, 'subtitles'),
-(10384, 11577, 364, 700, 7082, 'voice');
+(10384, 11577, 364, 700, 7082, 'voice'),
+(10385, 40128, 858, 1709, 18431, 'subtitles'),
+(10386, 40128, 858, 1710, 18443, 'voice'),
+(10387, 40591, 898, 1807, 18766, 'voice');
+INSERT INTO `wak_list_episodes` (`id`, `mal_id`, `id_anime`, `id_season`, `id_episode`, `type_episode`) VALUES
+(10388, 40591, 898, 1806, 18754, 'subtitles'),
+(10389, 40128, 860, 1712, 18407, 'subtitles'),
+(10390, 40591, 442, 1803, 18730, 'subtitles'),
+(10391, 40128, 859, 1711, 18419, 'subtitles'),
+(10392, 40591, 444, 1804, 18742, 'subtitles'),
+(10393, 40128, 861, 1713, 18395, 'subtitles'),
+(10394, 40591, 443, 1802, 18718, 'subtitles'),
+(10395, 40358, 896, 1796, 18611, 'subtitles'),
+(10396, 40358, 896, 1797, 18623, 'voice'),
+(10397, 40358, 894, 1794, 18575, 'subtitles'),
+(10398, 40358, 895, 1795, 18599, 'subtitles'),
+(10399, 40358, 893, 1793, 18587, 'subtitles');
 
 --
 -- Индексы сохранённых таблиц
@@ -9761,7 +9777,7 @@ ALTER TABLE `wak_list_episodes`
 -- AUTO_INCREMENT для таблицы `wak_list_episodes`
 --
 ALTER TABLE `wak_list_episodes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10385;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10400;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
