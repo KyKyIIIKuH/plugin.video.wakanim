@@ -41,5 +41,7 @@ This website and addon is not affiliated with Kodi, Team Kodi, or the XBMC Found
 
 ***
 Актуальный список аниме wakanim.tv
+
 - есть параметр id_season - ID сезона
+
 https://ploader.ru/wakanim/list_anime_wakanim.php
