@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Июл 10 2020 г., 10:51
+-- Время создания: Июл 10 2020 г., 16:05
 -- Версия сервера: 5.7.29
 -- Версия PHP: 5.6.40
 
@@ -13376,7 +13376,7 @@ INSERT INTO `wak_list_episodes` (`id`, `mal_id`, `id_anime`, `id_season`, `id_ep
 (14016, 40496, 1036, 2169, 22692, 'voice'),
 (14017, 37587, 1020, 2120, 21868, 'subtitles'),
 (14018, 37587, 1020, 2121, 21856, 'voice'),
-(14019, 40956, 510, 2046, 22414, 'voice'),
+(14019, 40956, 998, 2046, 22414, 'voice'),
 (14020, 40956, 510, 2045, 22438, 'subtitles'),
 (14021, 37587, 1022, 2118, 21796, 'subtitles'),
 (14022, 40496, 1034, 2166, 22666, 'subtitles'),
@@ -14901,7 +14901,9 @@ INSERT INTO `wak_list_episodes` (`id`, `mal_id`, `id_anime`, `id_season`, `id_ep
 (15552, 39388, 642, 1154, 20452, 'subtitles'),
 (15553, 39388, 642, 1154, 20453, 'subtitles'),
 (15554, 39388, 642, 1154, 20454, 'subtitles'),
-(15555, 39388, 642, 1154, 20455, 'subtitles');
+(15555, 39388, 642, 1154, 20455, 'subtitles'),
+(15556, 40623, 1011, 2106, 22258, 'voice'),
+(15557, 40623, 1011, 2105, 22246, 'subtitles');
 
 --
 -- Индексы сохранённых таблиц
@@ -14924,7 +14926,7 @@ ALTER TABLE `wak_list_episodes`
 -- AUTO_INCREMENT для таблицы `wak_list_episodes`
 --
 ALTER TABLE `wak_list_episodes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15556;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15558;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
