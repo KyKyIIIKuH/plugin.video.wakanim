@@ -48,8 +48,9 @@ _password = "Password"
 
 lang_site = ["ru", "de", "sc", "fr"]
 
+returnurl = None
+
 for lang in lang_site:
-	returnurl = "ru"
 	if(lang == "ru"):
 		returnurl = "%2Fru%2Fv2"
 	if(lang == "de"):
