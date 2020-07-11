@@ -58,16 +58,6 @@ def showCatalog(args):
     for li in ul.find_all("li"):
         # get values
         plot  = li.find("p", {"class": "tooltip_text"})
-        i_sel = 3
-        try:
-          plot.contents[3].string.strip()
-          i_sel  = 3
-        except IndexError:
-          if(int(len(plot)) == 1):
-            i_sel = 0
-          elif(int(len(plot)) > 1):
-            i_sel = int(len(plot) -1 )
-
         stars = li.find("div", {"class": "stars"})
         star  = stars.find_all("span", {"class": "-no"})
         thumb = li.img["src"].replace(" ", "%20")
@@ -83,7 +73,7 @@ def showCatalog(args):
                        "thumb":       thumb,
                        "fanart":      thumb,
                        "rating":      str(10 - len(star) * 2),
-                       "plot":        plot.contents[i_sel].string.strip(),
+                       "plot":        plot.contents[-1].string.strip(),
                        "year":        li.time.string.strip()},
                       isFolder=True, mediatype="video")
 
