@@ -60,7 +60,6 @@ for lang in lang_site:
 		returnurl = "%2Ffr%2Fv2"
 	login_url = "https://www.wakanim.tv/%s/v2/account/login?ReturnUrl=%s" % (lang, returnurl)
 	url = 'https://www.wakanim.tv/%s/v2' % (lang)
-	#login_url = "https://ploader.ru"
 
 	headers.update(
 	    {
@@ -70,23 +69,14 @@ for lang in lang_site:
 	        'DNT': '1',
 	    }
 	)
-
-	if(lang == "ru"):
-		payload = {
-			"Username": "%s" % (_username), 
-			"Password": "%s" % (_password), 
-			"login": "",
-			"RememberMe": "true",
-			"RememberMe": "False",
-		}
-	else:
-		payload = {
-			"Username": "%s" % (_username), 
-			"Password": "%s" % (_password), 
-			"login": "",
-			"RememberMe": "true",
-			"RememberMe": "False",
-		}
+	
+	payload = {
+		"Username": "%s" % (_username), 
+		"Password": "%s" % (_password), 
+		"login": "",
+		"RememberMe": "true",
+		"RememberMe": "False",
+	}
 
 
 	if(check_auth() == False):
