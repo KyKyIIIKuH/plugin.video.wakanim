@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Июл 12 2020 г., 11:15
+-- Время создания: Июл 13 2020 г., 21:44
 -- Версия сервера: 5.7.29
 -- Версия PHP: 5.6.40
 
@@ -15169,7 +15169,11 @@ INSERT INTO `wak_list_episodes` (`id`, `mal_id`, `id_anime`, `id_season`, `id_ep
 (15820, 30654, 226, 276, 3065, 'subtitles'),
 (15821, 30654, 226, 276, 3066, 'subtitles'),
 (15822, 33513, 420, 714, 7096, 'voice'),
-(15823, 33513, 420, 713, 7095, 'subtitles');
+(15823, 33513, 420, 713, 7095, 'subtitles'),
+(15824, 21, 429, 1755, 16559, 'subtitles'),
+(15825, 21, 428, 1754, 16523, 'subtitles'),
+(15826, 40417, 484, 2052, 21979, 'subtitles'),
+(15827, 40417, 483, 2050, 21967, 'subtitles');
 
 --
 -- Индексы сохранённых таблиц
@@ -15192,7 +15196,7 @@ ALTER TABLE `wak_list_episodes`
 -- AUTO_INCREMENT для таблицы `wak_list_episodes`
 --
 ALTER TABLE `wak_list_episodes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15824;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15828;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
