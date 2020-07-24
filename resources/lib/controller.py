@@ -60,7 +60,7 @@ def showCatalog(args):
         plot  = li.find("p", {"class": "tooltip_text"})
         stars = li.find("div", {"class": "stars"})
         star  = stars.find_all("span", {"class": "-no"})
-        thumb = li.img["src"].replace(" ", "%20")
+        thumb = li.img["data-src"].replace(" ", "%20")
         if thumb[:4] != "http":
             thumb = "https:" + thumb
 
