@@ -116,7 +116,7 @@ def listLastEpisodes(args):
           ep = check_last_ep(li.img["alt"].strip(), args._country)
 
           if(int(ep) > int(episode_site)):
-            mal.update(args, ids[8], ep, id_episode)
+            mal.update(args, ep, id_episode)
 
         # add to view
         view.add_item(args,
@@ -414,7 +414,7 @@ def listEpisodes(args):
         
         if(int(status) == 1 and int(i_num) > int(episode_site)):
           episode_site = mal.check_ep(args, ep[5], ep[8], id_episode, 0)
-          mal.update(args, args.url.split('/')[8], i_num, id_episode)
+          mal.update(args, i_num, id_episode)
           episode_site = i_num
           id_episode_new = li.find("a", {"class": "slider_item_link"})['href'].split('/')[5]
 
