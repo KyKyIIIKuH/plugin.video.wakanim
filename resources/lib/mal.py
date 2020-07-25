@@ -57,7 +57,7 @@ def auth(args):
     result = response.read().decode(getCharset(response))
     return result
 
-def check_ep(args, id_anime, id_season, id_episode, info):
+def check_ep(args, id_episode, info):
     opener = build_opener()
     opener.addheaders = [("User-Agent",      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36"),
                          ("Accept-Encoding", "identity"),
@@ -66,7 +66,7 @@ def check_ep(args, id_anime, id_season, id_episode, info):
     install_opener(opener)
 
     login = u"%s" % (quote_plus(args._addon.getSetting("mal_username").encode("utf-8")).encode("utf-8"))
-    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?check_ep=true&login=%s&id_anime=%s&id_season=%s&id_episode=%s" % (login, id_anime, id_season, id_episode))
+    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?check_ep=true&login=%s&id_episode=%s" % (login, id_episode))
     result = response.read().decode(getCharset(response))
 
     if(int(info) == 1):
@@ -74,7 +74,7 @@ def check_ep(args, id_anime, id_season, id_episode, info):
         dialog.notification(u'MAL', u"Episode %s" % (result), xbmcgui.NOTIFICATION_INFO, 5000)
     return result
 
-def update(args, id_season, ep, id_episode):
+def update(args, ep, id_episode):
     dialog = xbmcgui.Dialog()
     dialog.notification(u'MAL', u"Anime Update Episode Start", xbmcgui.NOTIFICATION_INFO, 5000)
     
@@ -86,7 +86,7 @@ def update(args, id_season, ep, id_episode):
     install_opener(opener)
 
     login = u"%s" % (quote_plus(args._addon.getSetting("mal_username").encode("utf-8")).encode("utf-8"))
-    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?update=true&status=1&login=%s&id_season=%s&ep=%s&id_episode=%s" % (login, id_season, ep, id_episode))
+    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?update=true&status=1&login=%s&ep=%s&id_episode=%s" % (login, ep, id_episode))
     result = response.read().decode(getCharset(response))
 
     dialog = xbmcgui.Dialog()
