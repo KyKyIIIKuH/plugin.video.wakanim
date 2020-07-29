@@ -132,6 +132,8 @@ for lang in lang_site:
 						if(int(id_episode) == int(ep_check["id_episode"])):
 							status = True
 							break
+						else:
+							status = False
 				else:
 					status = False
 
