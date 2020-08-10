@@ -1,6 +1,22 @@
 <?
 
+echo "\n==";
+echo date("d-m-Y H:i:s");
+echo "==\n";
+
+set_time_limit(0);
+
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+
 define ( 'ROOT_DIR', dirname ( __FILE__ ) );
+
+$file = ROOT_DIR.'/cron.txt';
+$current	=	@file_get_contents($file);
+
+if($current != 0) return false;
+file_put_contents($file, 1);
 
 require_once ROOT_DIR . '/mysqlidb.class.php';
 
@@ -31,12 +47,18 @@ foreach ($result_query_users as $keys_users => $value_users) {
 	curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 	$res = curl_exec($ch);
 	curl_close($ch);
 
 	preg_match("/({$username})/", trim($res), $login_status);
 
 	preg_match("/<meta name='csrf_token' content='([^']+)'>/", trim($res), $csrf_token);
+	if(isset($csrf_token[1]) && empty($csrf_token[1]) || !isset($csrf_token[1]) && empty($csrf_token[1])) {
+		echo "FAIL csrf_token\n";
+		file_put_contents($file, 0);
+		exit();
+	}
 	$csrf_token = $csrf_token[1];
 
 	if(isset($login_status) && empty($login_status) || !isset($login_status) && empty($login_status)) {
@@ -50,6 +72,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_POSTFIELDS,"user_name={$username}&password={$value_users["password"]}&cookie=1&sublogin=Login&submit=1&csrf_token=".$csrf_token);
 		curl_setopt($ch, CURLOPT_COOKIEJAR, ROOT_DIR."/cookie/cookie_{$username}.txt");
 		curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
@@ -66,6 +89,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
 		$info = curl_getinfo($ch);
 		$res = curl_exec($ch);
@@ -75,7 +99,8 @@ foreach ($result_query_users as $keys_users => $value_users) {
 	}
 
 	if(isset($login_status) && empty($login_status) || !isset($login_status) && empty($login_status)) {
-		echo "FAIL";
+		echo "FAIL\n";
+		file_put_contents($file, 0);
 		exit();
 	}
 
@@ -112,6 +137,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 			curl_setopt($ch, CURLOPT_POSTFIELDS,'{"anime_id":'.$anime_id.',"status":6,"score":0,"num_watched_episodes":'.$ep_now.',"csrf_token":"'.$csrf_token.'"}');
 			curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
 			$info = curl_getinfo($ch);
@@ -128,6 +154,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_POSTFIELDS,'{"anime_id":'.$anime_id.',"status":'.$status.',"score":0,"num_watched_episodes":'.$episodes.',"csrf_token":"'.$csrf_token.'"}');
 		curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
 		$info = curl_getinfo($ch);
@@ -143,6 +170,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
 		$info = curl_getinfo($ch);
 		$res = curl_exec($ch);
@@ -174,6 +202,7 @@ foreach ($result_query_users as $keys_users => $value_users) {
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 			curl_setopt($ch, CURLOPT_POSTFIELDS,'{"anime_id":'.$anime_id.',"status":'.$status.',"score":0,"num_watched_episodes":'.$episodes.',"csrf_token":"'.$csrf_token.'"}');
 			curl_setopt($ch, CURLOPT_COOKIEFILE, ROOT_DIR."/cookie/cookie_{$username}.txt");
 			$info = curl_getinfo($ch);
@@ -183,7 +212,9 @@ foreach ($result_query_users as $keys_users => $value_users) {
 	}
 }
 
-echo "OK";
+echo "OK\n";
+
+file_put_contents($file, 0);
 
 @$db_connect->close();
 ?>
