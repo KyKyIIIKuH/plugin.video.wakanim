@@ -74,6 +74,19 @@ def check_ep(args, id_episode, info):
         dialog.notification(u'MAL', u"Episode %s" % (result), xbmcgui.NOTIFICATION_INFO, 5000)
     return result
 
+def check_ep_all(args, id_episode):
+    opener = build_opener()
+    opener.addheaders = [("User-Agent",      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36"),
+                         ("Accept-Encoding", "identity"),
+                         ("Accept-Charset",  "utf-8"),
+                         ("DNT",             "1")]
+    install_opener(opener)
+
+    login = u"%s" % (quote_plus(args._addon.getSetting("mal_username").encode("utf-8")).encode("utf-8"))
+    response = urlopen("https://ploader.ru/wakanim/myanimelist.php?check_ep_all=true&login=%s&id_episode=%s" % (login,id_episode))
+    result = response.read().decode(getCharset(response))
+    return result
+
 def update(args, ep, id_episode):
     dialog = xbmcgui.Dialog()
     dialog.notification(u'MAL', u"Anime Update Episode Start", xbmcgui.NOTIFICATION_INFO, 5000)
