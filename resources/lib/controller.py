@@ -58,6 +58,7 @@ def showCatalog(args):
     for li in ul.find_all("li"):
         # get values
         plot  = li.find("p", {"class": "tooltip_text"})
+
         stars = li.find("div", {"class": "stars"})
         star  = stars.find_all("span", {"class": "-no"})
         thumb = li.img["data-src"].replace(" ", "%20")
@@ -102,20 +103,24 @@ def listLastEpisodes(args):
     for li in container.find_all("li"):
         # get values
         progress = int(li.find("div", {"class": "ProgressBar"}).get("data-progress"))
-        thumb = li.img["data-src"].replace(" ", "%20")
+        thumb = li.img["src"].replace(" ", "%20")
         if thumb[:4] != "http":
             thumb = "https:" + thumb
 
         status = "1" if progress > 90 else "0"
 
         if(int(status) == 1):
-          ids = li.find("a", {"class": "slider_item_season"})['href'].split('/')
           id_episode = li.find("a", {"class": "slider_item_link"})['href'].split('/')[5]
-          episode_site = mal.check_ep(args, ids[5], ids[8], id_episode)
+          episode_site = mal.check_ep(args, id_episode)
 
           ep = check_last_ep(li.img["alt"].strip(), args._country)
+          ep_all = mal.check_ep_all(args, id_episode)
+
+          if(int(ep) > int(ep_all)):
+            ep = (int(ep) - int(ep_all))
 
           if(int(ep) > int(episode_site)):
+            #mal.update(args, ids[8], ep, id_episode)
             mal.update(args, ep, id_episode)
 
         # add to view
@@ -180,7 +185,7 @@ def listLastSimulcasts(args):
         plot  = li.find("p", {"class": "tooltip_text"})
         stars = li.find("div", {"class": "stars"})
         star  = stars.find_all("span", {"class": "-no"})
-        thumb = li.img["data-src"].replace(" ", "%20")
+        thumb = li.img["src"].replace(" ", "%20")
         if thumb[:4] != "http":
             thumb = "https:" + thumb
 
@@ -396,7 +401,7 @@ def listEpisodes(args):
           progress = int(li.find("div", {"class": "ProgressBar"}).get("data-progress"))
         except AttributeError:
           continue
-        thumb = li.img["data-src"].replace(" ", "%20")
+        thumb = li.img["src"].replace(" ", "%20")
         if thumb[:4] != "http":
             thumb = "https:" + thumb
 
@@ -406,15 +411,25 @@ def listEpisodes(args):
         i_num = check_last_ep(li.img["alt"].strip(), args._country)
 
         id_episode = li.find("a", {"class": "slider_item_link"})['href'].split('/')[5]
-        ep = args.url.split('/')
-        episode_site = mal.check_ep(args, ep[5], ep[8], id_episode, 0)
+        episode_site = mal.check_ep(args, id_episode, 0)
 
         #dialog = xbmcgui.Dialog()
-        #dialog.notification(u'MAL', u"%s | %s | %s" % (status, i_num, episode_site), xbmcgui.NOTIFICATION_INFO, 5000)
+        #dialog.notification(u'MAL', u"%s" % (args.url.split('/')), xbmcgui.NOTIFICATION_INFO, 5000)
+        #return
+
+        ep_all = mal.check_ep_all(args, id_episode)
+
+        if(int(i_num) > int(ep_all)):
+          i_num = (int(i_num) - int(ep_all))
         
         if(int(status) == 1 and int(i_num) > int(episode_site)):
-          episode_site = mal.check_ep(args, ep[5], ep[8], id_episode, 0)
+          episode_site = mal.check_ep(args, id_episode, 0)
+          #mal.update(args, args.url.split('/')[8], i_num, id_episode)
           mal.update(args, i_num, id_episode)
+
+          #dialog = xbmcgui.Dialog()
+          #dialog.notification(u'MAL', u"ep %s | epsite %s | all %s" % (i_num, episode_site, ep_all), xbmcgui.NOTIFICATION_INFO, 5000)
+
           episode_site = i_num
           id_episode_new = li.find("a", {"class": "slider_item_link"})['href'].split('/')[5]
 
