@@ -103,7 +103,7 @@ def listLastEpisodes(args):
     for li in container.find_all("li"):
         # get values
         progress = int(li.find("div", {"class": "ProgressBar"}).get("data-progress"))
-        thumb = li.img["src"].replace(" ", "%20")
+        thumb = li.img["data-src"].replace(" ", "%20")
         if thumb[:4] != "http":
             thumb = "https:" + thumb
 
@@ -185,7 +185,7 @@ def listLastSimulcasts(args):
         plot  = li.find("p", {"class": "tooltip_text"})
         stars = li.find("div", {"class": "stars"})
         star  = stars.find_all("span", {"class": "-no"})
-        thumb = li.img["src"].replace(" ", "%20")
+        thumb = li.img["data-src"].replace(" ", "%20")
         if thumb[:4] != "http":
             thumb = "https:" + thumb
 
@@ -269,7 +269,7 @@ def myDownloads(args):
     # for every list entry
     for div in container.find_all("div", {"class": "big-item-list_item"}):
         # get values
-        thumb = div.img["src"].replace(" ", "%20")
+        thumb = div.img["data-src"].replace(" ", "%20")
         if thumb[:4] != "http":
             thumb = "https:" + thumb
 
@@ -401,7 +401,7 @@ def listEpisodes(args):
           progress = int(li.find("div", {"class": "ProgressBar"}).get("data-progress"))
         except AttributeError:
           continue
-        thumb = li.img["src"].replace(" ", "%20")
+        thumb = li.img["data-src"].replace(" ", "%20")
         if thumb[:4] != "http":
             thumb = "https:" + thumb
 
